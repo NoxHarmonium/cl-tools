@@ -1,7 +1,7 @@
 cl-tools
 ========
 
-Command line tools I use for my various coding projects.
+Command line tools I use for my various coding projects and is still very much a work in progress.
 
 Very much only for personal use at the moment. I hope to clean it up a bit and maybe make it useful to other people. 
 
