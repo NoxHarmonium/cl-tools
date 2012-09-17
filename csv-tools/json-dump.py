@@ -29,7 +29,7 @@ def recurseJson(tokens, jsonObject):
 	mainTok = cTokens.pop(0)	
 
 	if (args.v):
-		print ('toks: {0}, o: {1}\n'.format(mainTok,jsonObject))
+		#print ('toks: {0}, o: {1}\n'.format(mainTok,jsonObject))
 		print ('tok: {0}'.format(mainTok['token']))
 	
 	

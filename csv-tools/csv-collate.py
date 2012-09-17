@@ -41,7 +41,8 @@ def processCell(cell, index, allCols,n):
 	for col in allCols:
 		i -= len(col['list'])
 		if (i < 0):
-			print ('index: {0}, col: {1}'.format(index,col['action']))
+			if (args.v):			
+				print ('index: {0}, col: {1}'.format(index,col['action']))
 
 			if (col['action'] == 'average'):
 				return cell / n
@@ -65,11 +66,16 @@ if (args.a != None):
 	avCols = map(int, args.a.split(','))
 else:
 	avCols = []
+if (args.y != None):
+	hvCols = map(int, args.y.split(','))
+else:
+	hvCols = []
 
 allCols = [
 		{'action': 'min', 'list': minCols},
 		{'action': 'max', 'list': maxCols},
-		{'action': 'average', 'list': avCols}]
+		{'action': 'average', 'list': avCols},
+		{'action': 'hypervolume', 'list': hvCols}]
 
 if (args.n != -1):
 	for i in range(args.n):
@@ -112,7 +118,7 @@ for line in fileinput.input(args.files, inplace=args.inplace):
 			if (len(agrLines[lineIndex]) - 1 < i + l):
 				agrLines[lineIndex].append(float(tokens[col]))
 			else:
-				agrLines[lineIndex][i+l] += max(agrLines[lineIndex][i+l],float(tokens[col]))
+				agrLines[lineIndex][i+l] = max(agrLines[lineIndex][i+l],float(tokens[col]))
 
 		l += len(maxCols)
 
@@ -135,7 +141,7 @@ for line in agrLines:
 	lineString = ''
 	i = 0
 	for cell in line:
-		cell = processCell(cell,i,allCols,args.n)		
+		cell = processCell(cell,i,allCols,pageCount)		
 		lineString += '{0}, '.format(cell)
 		i += 1
 	print lineString[:-2]
