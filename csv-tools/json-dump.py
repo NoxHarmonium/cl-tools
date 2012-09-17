@@ -16,7 +16,7 @@ from argparse import ArgumentParser
 header = []
 
 def isToken(char):
-	return char == '.' or char == '>'
+	return char == '.' or char == '>'  or char == '[' or char == ']'
 
 def recurseJson(tokens, jsonObject):
 	
