@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 # JSON Dump
-# Performs transformations on 
+# Performs transformations on multiple csv files
+# of the same format such as averaging.
 #
 
 import fileinput
