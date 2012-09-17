@@ -11,10 +11,20 @@ import json
 import md5
 from argparse import ArgumentParser
 
-
-
-parser = ArgumentParser()
+parser = ArgumentParser(description='Performs transformations on multiple csv files of the same format such as averaging.',
+	     epilog="By Sean Dawson")
 parser.add_argument('-v', action="store_true",default=False, help='show verbose debugging messages.')
+
+group = parser.add_mutually_exclusive_group()
+group.add_argument('-n', action="store", type=int, default=-1, help='the number of rows considered as one page (default: detect from blank lines).')
+group.add_argument('-g' , action="store", help='group by specifed column/s (comma delimited).')
+
+parser.add_argument('-m', action="store", help='min of specified column/s (comma delimited).')
+parser.add_argument('-M', action="store", help='max of specified column/s (comma delimited).')
+parser.add_argument('-a', action="store", help='average specified column/s (comma delimited).')
+parser.add_argument('-y', action="store", help='calculate hypervolume on specified column/s (comma delimited).')
+parser.add_argument('-s', action="store", type=int, default=0, help='the amount of lines to skip on each page. (to avoid headers)')
+
 
 parser.add_argument('files', nargs='*', help='specify input files')
 
@@ -26,11 +36,112 @@ group.add_argument('-i', '--inplace', action='store_true',
     help='modify files inplace')
 args = parser.parse_args()
 
+def processCell(cell, index, allCols,n):
+	i = index	
+	for col in allCols:
+		i -= len(col['list'])
+		if (i < 0):
+			print ('index: {0}, col: {1}'.format(index,col['action']))
+
+			if (col['action'] == 'average'):
+				return cell / n
+			return cell
+
 if args.output and args.output != '-':
    sys.stdout = open(args.output, 'w')
 
-for line in fileinput.input(args.files, inplace=args.inplace):
-	print ('')
+lineCount = args.s
+agrLines = []
+pageCount = 0
+if (args.m != None):
+	minCols = map(int, args.m.split(','))
+else:
+	minCols = []
+if (args.M != None):
+	maxCols = map(int, args.M.split(','))
+else:
+	maxCols = []
+if (args.a != None):
+	avCols = map(int, args.a.split(','))
+else:
+	avCols = []
 
-#TODO: Everything
+allCols = [
+		{'action': 'min', 'list': minCols},
+		{'action': 'max', 'list': maxCols},
+		{'action': 'average', 'list': avCols}]
+
+if (args.n != -1):
+	for i in range(args.n):
+		agrLines.append([])
+
+for line in fileinput.input(args.files, inplace=args.inplace):
+	if (line.strip() == ''):
+		continue	
+	if (args.n != -1):
+		if (lineCount > args.n + args.s):
+			lineCount = 0
+			pageCount += 1	
+			if (args.v):
+				print ('New page')
+
+		if (lineCount <= args.s):
+			lineCount += 1
+			continue
+
+		tokens = line.split(',')
+		
+		lineIndex = lineCount - args.s-1
+		if (args.v):		
+			print ('lineIndex: {0} toks: {1}'.format(lineIndex,tokens))
+		
+		l = 0
+
+
+		for i in range(len(minCols)):
+			col = minCols[i]
+			if (len(agrLines[lineIndex]) - 1 < i + l):
+				agrLines[lineIndex].append(float(tokens[col]))
+			else:
+				agrLines[lineIndex][i+l] = min(agrLines[lineIndex][i+l],float(tokens[col]))
+
+		l += len(minCols)
+
+		for i in range(len(maxCols)):
+			col = maxCols[i]
+			if (len(agrLines[lineIndex]) - 1 < i + l):
+				agrLines[lineIndex].append(float(tokens[col]))
+			else:
+				agrLines[lineIndex][i+l] += max(agrLines[lineIndex][i+l],float(tokens[col]))
+
+		l += len(maxCols)
+
+		for i in range(len(avCols)):
+			col = avCols[i]
+			if (len(agrLines[lineIndex]) - 1 < i + l):
+				agrLines[lineIndex].append(float(tokens[col]))
+			else:
+				agrLines[lineIndex][i+l] += float(tokens[col])
+			
+		l += len(avCols)		
+
+		lineCount += 1
+
+if (lineCount != 0):
+	pageCount += 1
+
+print 'Results:'
+for line in agrLines:
+	lineString = ''
+	i = 0
+	for cell in line:
+		cell = processCell(cell,i,allCols,args.n)		
+		lineString += '{0}, '.format(cell)
+		i += 1
+	print lineString[:-2]
+		
+
+
+
+#TODO: Somethings
 

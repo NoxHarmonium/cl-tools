@@ -8,6 +8,7 @@ import fileinput
 import sys
 import json
 import md5
+import os
 from argparse import ArgumentParser
 
 
@@ -122,7 +123,7 @@ def processFile(fileName,fileData, query):
 	header.reverse()
 	print ', '.join([str(x) for x in header])
 	for r in result:
-		print (fileName + ',' + r)
+		print (os.path.basename(fileName) + ',' + r)
 
 
 
