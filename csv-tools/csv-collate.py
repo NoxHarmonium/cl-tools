@@ -86,6 +86,7 @@ hvCounter = 0
 hvTotal = 0
 hvAggr = 0
 frontCount = 1
+oldFrontCount = 1
 
 allCols = [
 		{'action': 'min', 'list': minCols},
@@ -109,6 +110,7 @@ for line in fileinput.input(args.files, inplace=args.inplace):
 			pageCount += 1	
 			if (args.v):
 				print ('New page')
+			hvCounter += 1
 
 		#if (lineCount <= args.s):
 		#	lineCount += 1
@@ -151,6 +153,7 @@ for line in fileinput.input(args.files, inplace=args.inplace):
 			l += len(avCols)		
 	
 			point = []
+
 			for i in range(len(hvCols)):
 				if (len(agrLines[lineIndex]) - 1 < i + l):
 					agrLines[lineIndex].append('hv')
@@ -158,21 +161,24 @@ for line in fileinput.input(args.files, inplace=args.inplace):
 					agrLines[lineIndex][i+l] = 'hv'
 
 				col = hvCols[i]
+				
 				if (i == 0):
-					if (hvCounter > int(hvCols[i])):
+					if (hvCounter >= int(hvCols[i])):
 						front = fronts[frontCount-1]
-						#print 'Appending front: {0}'.format(front)
+						if (args.v):						
+							print 'Appending front: {0}'.format(front)
 						#front = []
 
 						fronts.append([])
 						frontCount += 1												
 						#hvAggr += hv
 						hvCounter = 0
+						
 						#hvTotal += 1
 
-					else:
-						hvCounter += 1
-						#print ('a')
+					#else:
+					#	hvCounter += 1
+					#	#print ('a')
 				
 				if (i > 1):
 					#print "hvBounds[i-2]['min']: {0}, tokens[col]: {1}".format(hvBounds[i-2]['min'],tokens[col])
@@ -191,9 +197,9 @@ for line in fileinput.input(args.files, inplace=args.inplace):
 			raise
 			
 		if (point != []):		
-			fronts[frontCount-1].append(point)
+			fronts[oldFrontCount-1].append(point)
 		l += len(hvCols)		
-
+		oldFrontCount = frontCount
 
 
 		lineCount += 1
@@ -202,32 +208,35 @@ for line in fileinput.input(args.files, inplace=args.inplace):
 #	pageCount += 1
 
 #print ('Final page count: {0}'.format(pageCount))
-
-#print 'Points:'
-#for point in front:
-#	print(point)
-
-#print 'hvBounds:\n{0}'.format(hvBounds)
-
+if (args.v):
+	print 'Points:'
+i = 0
 for front in fronts:
+	if (front != []):	
+		if (args.v):
+			print 'Front: {0}'.format(i)
+			for point in front:
+				print(point)
+			print 'hvBounds:\n{0}'.format(hvBounds)
 	
-	
-	
-	for i in range(len(front)):
-		for j in range(len(front[i])):
-			front[i][j] = (front[i][j] - hvBounds[j]['min']) / (hvBounds[j]['max'] - hvBounds[j]['min'])
-		#print ('Normalised Front: {0}'.format(front[i]))
-		referencePoint = [1,1]						
-	
-	
-	hyperVolume = HyperVolume(referencePoint)
-	hv = hyperVolume.compute(front)	
-	hvAggr += hv
-	hvTotal += 1
+		i += 1 
+		
+		
+		
 
-#print 'Hypervolume:\n {0}'.format(hvAggr/hvTotal)
+		referencePoint = [20,200]						
+	
+	
+		hyperVolume = HyperVolume(referencePoint)
+		hv = hyperVolume.compute(front)	
+		hvAggr += hv
+		hvTotal += 1
 
+		if (args.v):	
+			print 'Hypervolume:\n {0}'.format(hv)
 
+if (args.v):
+	print 'Average hypervolume (hvAggr/hvTotal):\n {0}/{1} = {2}'.format(hvAggr,hvTotal,hvAggr/hvTotal)
 
 
 

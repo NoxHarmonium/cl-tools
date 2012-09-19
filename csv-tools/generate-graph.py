@@ -129,7 +129,7 @@ graph =	{
 		'terminal'	: 'pdf color',
 		'output'	: '\'{0}.pdf\''.format(args.destination),
 		'key'		: 'bottom',
-		'yrange'	: '[0:1]'
+		#'yrange'	: '[0:1]'
 		
 	}
 

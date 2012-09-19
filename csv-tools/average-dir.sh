@@ -8,7 +8,7 @@
 	for i in {0..99}
 	do
 		#echo "Files:"	   
-		{ echo -n $i", " && find $1 | grep "\."$i"\.json" | head -n $2 | xargs ./json-dump.py "population>.Critter[Fitness.Changes,Fitness.TotalJourneyMinutes,Rank]" | ./csv-collate.py -n 1 -a 6 -m 6,9 -M 6 -y 100,11,6,9; }
+		{ echo -n $i", " && find $1 | grep "\."$i"\.json" |  head -n $2 | xargs ./json-dump.py "population>.Critter[Fitness.Changes,Fitness.TotalJourneyMinutes,Rank]" | ./csv-collate.py -n 1 -a 6 -m 6,9 -M 6 -y 100,11,6,9; }
 #	done
 	
 	
