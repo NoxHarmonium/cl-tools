@@ -21,7 +21,7 @@ show_debug = False;
 
 def exit_error():
 	print "Fatal Error: Exiting..."
-	sys.exit(EXIT_ERROR);
+	sys.exit(EXIT_ERROR)
 
 def exit_warning():
 	if (not(force)):
@@ -111,10 +111,10 @@ for filename in args.tex_file:
 		
 		# Blank answer defaults to yes
 		answer = None
-		while (not(answer == 'y' || answer == 'n' || answer == '')):
+		while (not(answer == 'y' or answer == 'n' or answer == '')):
 			answer = input().lower().strip()
 			
-		if (answer == '' || answer = 'y'):
+		if (answer == '' or answer == 'y'):
 			command = "{0} -recorder {1}".format(args.latex,rawfilename)
 			print ("Executing: " + command )
 			call(command.split(' '))
