@@ -106,7 +106,7 @@ for filename in args.tex_file:
 		debug("Regenerating .fls files...")
 		
 		print("The .fls file does not exist or is out of date. "
-			  "The tex file needs to be recompiled with the '-recorder' switch."
+			  "The tex file needs to be recompiled with the '-recorder' switch. "
 			  "Do you want the script to this for you? [Y/n]")
 		
 		# Blank answer defaults to yes
