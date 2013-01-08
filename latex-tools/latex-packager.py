@@ -9,6 +9,7 @@ import glob
 import os
 import sys
 import time
+from subprocess import call
 
 # Constants
 EXIT_SUCCESS = 0;
@@ -50,6 +51,9 @@ group.add_argument('-7', action="store_true",default=False,
 group.add_argument('-p', action="store_true",default=False, 			
 		help='Use zip compression.v (Requires zip)')
 
+parser.add_argument('--latex', default='pdflatex', 
+		help='specify the latex complier to use when generating .fls files. (Default: pdflatex)')
+		
 
 parser.add_argument('tex_file', type=str, nargs='+', 
 		help='one or many tex files to package.')
@@ -66,7 +70,8 @@ show_debug = args.v;
 for filename in args.tex_file:
 	fileSplit = filename.split('.')
 	extension = fileSplit[-1]
-	flsfilename = "".join(fileSplit[0:-1]) + '.fls'
+	rawfilename = "".join(fileSplit[0:-1])
+	flsfilename = rawfilename + '.fls'
 
 	debug("filename: '{0}'".format(filename))
 	debug("flsfilename: '{0}'".format(flsfilename))
@@ -95,9 +100,29 @@ for filename in args.tex_file:
 			print("The .fls file has a modification date that is earlier than the tex file. It will need to be regenerated.")
 			createfls = True
 
-
-
-
+	
+	# Regenerate fls files if needed
+	if (createfls):
+		debug("Regenerating .fls files...")
+		
+		print("The .fls file does not exist or is out of date. "
+			  "The tex file needs to be recompiled with the '-recorder' switch."
+			  "Do you want the script to this for you? [Y/n]")
+		
+		# Blank answer defaults to yes
+		answer = None
+		while (not(answer == 'y' || answer == 'n' || answer == '')):
+			answer = input().lower().strip()
+			
+		if (answer == '' || answer = 'y'):
+			command = "{0} -recorder {1}".format(args.latex,rawfilename)
+			print ("Executing: " + command )
+			call(command.split(' '))
+		else:
+			print ("Warning: You cannot proceed without generating a valid .fls file.") 
+			exit_warning()
+		
+		
 
 
 
