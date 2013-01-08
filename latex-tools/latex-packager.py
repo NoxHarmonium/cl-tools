@@ -180,7 +180,7 @@ for filename in args.tex_file:
 
 
 	if (error_code != 0):
-		print ("Warning: Latex complile returned errorcode {0}.".format(error_code))
+		print ("Warning: Latex compile returned errorcode {0}.".format(error_code))
 		exit_warning()
 	
 	debug("Removing temp directory...")
