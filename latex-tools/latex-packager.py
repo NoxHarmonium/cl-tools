@@ -37,10 +37,12 @@ from subprocess import call
 EXIT_SUCCESS = 0;
 EXIT_ERROR = 1;
 
-#Global Vars
+# Global Vars
 force = False;
 show_debug = False;
 
+
+# Short helper functions
 def exit_error():
 	print "Fatal Error: Exiting..."
 	sys.exit(EXIT_ERROR)
@@ -49,11 +51,13 @@ def exit_warning():
 	if (not(force)):
 		print "Error: Exiting... (You can ignore this message and continue by using the '-f' switch."
 		sys.exit(EXIT_ERROR);
-
 def debug(message):
 	if (show_debug):
 		print message
 
+#####
+# Program start
+#####
 print "latex-packager: By Sean Dawson"
 
 parser = argparse.ArgumentParser(description='Packages up a latex directory.')
@@ -92,12 +96,12 @@ args = parser.parse_args()
 force = args.f;
 show_debug = args.v;
 
+# Run for every filename
 for filename in args.tex_file:
 	fileSplit = filename.split('.')
 	extension = fileSplit[-1]
 	rawfilename = "".join(fileSplit[0:-1])
 	flsfilename = rawfilename + '.fls'
-
 
 	debug("filename: '{0}'".format(filename))
 	debug("flsfilename: '{0}'".format(flsfilename))
@@ -172,7 +176,10 @@ for filename in args.tex_file:
 	debug("Creating temp directory...")
 	tempDir = tempfile.mkdtemp()
 	debug("Temp directory is at '{0}'".format(tempDir))
+	
+	# Change to latex directory	
 	os.chdir(os.path.dirname(filename))
+
 	for line in flsLines:
 		splitLine = line.split(' ')
 		commandCode = splitLine[0]
@@ -197,6 +204,7 @@ for filename in args.tex_file:
 			shutil.copyfile(inputFile, targetFile)
 			
 		
+	# Return to original directory
 	os.chdir(currentDir)
 	error_code = 0;	
 	
@@ -231,6 +239,4 @@ for filename in args.tex_file:
 	shutil.rmtree(tempDir)
 		
 		
-
-
 
