@@ -84,7 +84,7 @@ for filename in args.tex_file:
 	
 	# Simple filename sanity check.
 	if (not(os.path.exists(filename))):
-		print "Warning: '{0}' does not exist. Please specify a valid tex file."
+		print ("Warning: '{0}' does not exist. Please specify a valid tex file.".format(filename))
 		exit_warning()
 	if (not(extension == 'tex')):
 		print ("Warning: '{0}' does not seem to be a .tex file. Please specify a tex file to package.") 
@@ -158,7 +158,15 @@ for filename in args.tex_file:
 		commandCode = splitLine[0]
 		if (commandCode == 'INPUT'):
 			inputFile = splitLine[1].strip()
-			targetFile = tempDir + '/' + os.path.basename(inputFile)
+
+			targetFile = ''
+			#Check for absolute path
+			if (inputFile[0] == '/'):
+				targetFile = tempDir + '/' + os.path.basename(inputFile)
+			else:
+				targetFile = tempDir + '/' + inputFile
+
+			
 			debug("Copy: {0} -> {1}".format(inputFile,targetFile))
 			os.chdir(os.path.dirname(filename))
 			
