@@ -83,6 +83,9 @@ for filename in args.tex_file:
 	debug("flsfilename: '{0}'".format(flsfilename))
 	
 	# Simple filename sanity check.
+	if (not(os.path.exists(filename))):
+		print "Warning: '{0}' does not exist. Please specify a valid tex file."
+		exit_warning()
 	if (not(extension == 'tex')):
 		print ("Warning: '{0}' does not seem to be a .tex file. Please specify a tex file to package.") 
 		exit_warning()
@@ -122,11 +125,19 @@ for filename in args.tex_file:
 			answer = raw_input().lower().strip()
 			
 		if (answer == '' or answer == 'y'):
-			command = "{0} -recorder {1}".format(args.latex,rawfilename)
+			command = "{0} -recorder {1}".format(args.latex,os.path.basename(rawfilename))
 			print ("Executing: " + command )
+			print ("cwd: " + os.path.dirname(filename))
+			os.chdir(os.path.dirname(filename))
 			error_code = call(command.split(' '), cwd=os.path.dirname(filename))
-			if (error_code != 0):
+			os.chdir(currentDir)
+			if (error_code != EXIT_SUCCESS):
 				print ("Warning: Latex complile returned errorcode {0}.".format(error_code))
+				print ("Removing incomplete .fls file...")
+				try:
+					os.remove(flsfilename)
+				except:
+					""
 				exit_warning()
 		else:
 			print ("Warning: You cannot proceed without generating a valid .fls file.") 
