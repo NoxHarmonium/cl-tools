@@ -1,7 +1,27 @@
 #!/usr/bin/python
 """
-   This script aims to package up latex projects with all it's
-   dependencies so that it runs on any machine.
+##################
+latex-packager.py
+##################
+
+This script aims to package up latex projects with all it's dependencies so that it runs on any machine even if the style files are not installed.
+
+--------------------------------------------------------------------
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+----------------------------------------------------------------------
 """
 
 import argparse
@@ -152,7 +172,7 @@ for filename in args.tex_file:
 	debug("Creating temp directory...")
 	tempDir = tempfile.mkdtemp()
 	debug("Temp directory is at '{0}'".format(tempDir))
-
+	os.chdir(os.path.dirname(filename))
 	for line in flsLines:
 		splitLine = line.split(' ')
 		commandCode = splitLine[0]
@@ -167,14 +187,19 @@ for filename in args.tex_file:
 				targetFile = tempDir + '/' + inputFile
 
 			
+
 			debug("Copy: {0} -> {1}".format(inputFile,targetFile))
-			os.chdir(os.path.dirname(filename))
+			targetDir = os.path.dirname(targetFile);
+			
+			if not os.path.exists(targetDir):
+			    os.makedirs(targetDir)
 			
 			shutil.copyfile(inputFile, targetFile)
-			os.chdir(currentDir)
+			
 		
+	os.chdir(currentDir)
 	error_code = 0;	
-		
+	
 
 	debug("Starting compression operation...")
 	arc_format = '';
